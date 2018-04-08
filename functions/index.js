@@ -3,7 +3,7 @@ const functions = require('firebase-functions');
 
 // The Firebase Admin SDK to access the Firebase Realtime Database.
 const firebase = require('firebase-admin');
-firebase.initializeApp();
+firebase.initializeApp(functions.config().firebase);
 
 // AJAX requests
 const axios = require('axios');
@@ -19,8 +19,8 @@ if (process.env.NODE_ENV !== 'production') {
 exports.getData = functions.https.onRequest((request, response) => {
     const ref = firebase.app().database().ref();
     const coins = ref.child('coins');
-
-    axios.get(process.env.apiuri)
+    
+    axios.get(functions.config().process.env.apiuri)
         .then((response) => {
             const result = {};
             let translatedCoin = {};
@@ -43,6 +43,7 @@ exports.getData = functions.https.onRequest((request, response) => {
             return true;
         })
         .catch((error) => {
+            console.log(error);
             response.send(JSON.stringify(error));
         });
 
