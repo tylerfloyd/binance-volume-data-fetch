@@ -20,7 +20,7 @@ exports.getData = functions.https.onRequest((request, response) => {
     const ref = firebase.app().database().ref();
     const coins = ref.child('coins');
 
-    axios.get(process.env.apiURL)
+    axios.get(process.env.apiuri)
         .then((response) => {
             const result = {};
             let translatedCoin = {};
@@ -28,7 +28,7 @@ exports.getData = functions.https.onRequest((request, response) => {
             if( response.status === 200){
                 
                 response.data.resu.pop();
-
+                
                 _.map(response.data.resu, (coin) => {
                     transalatedCoin = transalate( coin );
                     Object.assign(result, transalatedCoin );
