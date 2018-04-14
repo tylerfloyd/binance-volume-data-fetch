@@ -20,32 +20,33 @@ exports.getData = functions.https.onRequest((request, response) => {
     const ref = firebase.app().database().ref();
     const coins = ref.child('coins');
     
-    axios.get(functions.config().process.env.apiuri)
-        .then((response) => {
-            const result = {};
-            let translatedCoin = {};
-            console.log(response.data);
-            if( response.status === 200){
-                
-                response.data.resu.pop();
-                
-                _.map(response.data.resu, (coin) => {
-                    transalatedCoin = transalate( coin );
-                    Object.assign(result, transalatedCoin );
+        axios.get(functions.config().process.env.apiuri)
+            .then((response) => {
+                const result = {};
+                console.log(response.data);
+                if( response.status === 200){
+                    
+                    response.data.resu.pop();
+                    
+                    _.map(response.data.resu, (coin) => {
+                        transalatedCoin = transalate( coin );
+                        Object.assign(result, transalatedCoin );
+                    });
+                }
+
+                if(!_.isEmpty(result)){
+                    coins.update(result);
+                }        
+
+                response.send(response.status);
+                return true;
+            })
+            .catch((error) => {
+                console.log(error);
+                response.send({
+                    error:'unhandled event'
                 });
-            }
-
-            if(!_.isEmpty(result)){
-                coins.update(result);
-            }        
-
-            response.send(response.status);
-            return true;
-        })
-        .catch((error) => {
-            console.log(error);
-            response.send(JSON.stringify(error));
-        });
+            });
 
     // Take the crappy strings that are handed back and translate into an object
     function transalate(coin){  
